@@ -29,7 +29,7 @@ resource "aws_iam_role_policy" "lambda" {
   name   = "${var.lambda_name}"
   role   = "${aws_iam_role.lambda.name}"
   policy = "${var.iam_policy_document}"
-  count  = "${var.require_additional_policy}"
+  count  = "${length(var.iam_policy_document) > 0 ? 1 : 0}"
 }
 
 resource "aws_lambda_function" "lambda" {

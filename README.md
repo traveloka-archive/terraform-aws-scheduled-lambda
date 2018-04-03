@@ -19,7 +19,6 @@ Module Input Variables
 - `tags` - Tags associated with the lambda function
 - `environment_variables` - Environment variables for your lambda function
 - `iam_policy_document` - Additional IAM policy document to be attached to your lambda if the lambda needs to access another AWS resource.
-- `require_additional_policy` - Flag to indicate whether the lambda requires additional policy.
 - `schedule_expression` - a [valid rate or cron expression](http://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html)
 - `subnet_ids` - A list of subnet ids associated with the lambda
 - `security_group_ids` - A list of security group ids associated with the lambda
@@ -59,8 +58,6 @@ module "periodic_worker" {
   lambda_memory_size = "128"
 
   lambda_timeout = "300"
-
-  require_additional_policy = true
 
   tags = {
     "team"   = "someteam"

@@ -50,11 +50,6 @@ variable "iam_policy_document" {
   description = "Additional policy associated with the lambda"
 }
 
-variable "require_additional_policy" {
-  description = "Flag to indicate whether the lambda requires additional policy"
-  default     = false
-}
-
 variable "subnet_ids" {
   type        = "list"
   description = "Subnet ids associated with the lambda"

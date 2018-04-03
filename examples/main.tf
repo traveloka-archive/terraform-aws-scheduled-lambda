@@ -30,8 +30,6 @@ module "periodic_worker" {
 
   lambda_timeout = "300"
 
-  require_additional_policy = true
-
   tags = {
     "team"   = "someteam"
     "domain" = "somedomain"
@@ -43,5 +41,5 @@ module "periodic_worker" {
 
   schedule_expression = "cron(*/10 * * * ? *)"
 
-  iam_policy_document = "${data.aws_iam_policy_document.read-a-bucket.json}"
+  iam_policy_document = ""
 }

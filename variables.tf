@@ -14,18 +14,22 @@ variable "lambda_name" {
 }
 
 variable "lambda_runtime" {
+  type        = "string"
   description = "Runtime of the lambda"
 }
 
 variable "lambda_handler" {
+  type        = "string"
   description = "Handler of the function"
 }
 
 variable "lambda_memory_size" {
+  type        = "string"
   description = "Lambda memory size"
 }
 
 variable "lambda_timeout" {
+  type        = "string"
   description = "Lambda timeout value"
 }
 
@@ -38,8 +42,7 @@ variable "tags" {
 variable "environment_variables" {
   type        = "map"
   description = "Environment variables for the lambda"
-
-  default = {}
+  default     = {}
 }
 
 variable "iam_policy_document" {

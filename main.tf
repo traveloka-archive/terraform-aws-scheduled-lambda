@@ -32,16 +32,37 @@ resource "aws_iam_role_policy" "lambda" {
   count  = "${length(var.iam_policy_document) > 0 ? 1 : 0}"
 }
 
+resource "random_id" "randomiser" {
+  keepers = {
+    s3_key = "${var.lambda_code_path}"
+  }
+
+  byte_length = 8
+  prefix      = "${var.product_domain}-${var.lambda_name}-"
+}
+
+locals {
+  default_tags = {
+    Name          = "${var.lambda_name}"
+    Environment   = "${var.environment}"
+    ProductDomain = "${var.product_domain}"
+    Description   = "${var.lambda_description}"
+    ManagedBy     = "Terraform"
+  }
+}
+
 resource "aws_lambda_function" "lambda" {
   s3_bucket     = "${var.lambda_code_bucket}"
   s3_key        = "${var.lambda_code_path}"
-  function_name = "${var.lambda_name}"
+  function_name = "${random_id.randomiser.hex}"
+  description   = "${var.lambda_description}"
   role          = "${aws_iam_role.lambda.arn}"
   runtime       = "${var.lambda_runtime}"
   handler       = "${var.lambda_handler}"
   memory_size   = "${var.lambda_memory_size}"
   timeout       = "${var.lambda_timeout}"
-  tags          = "${merge(var.tags, map("ManagedBy", "Terraform"))}"
+
+  tags = "${merge(local.default_tags, var.tags)}"
 
   vpc_config {
     subnet_ids         = ["${var.subnet_ids}"]

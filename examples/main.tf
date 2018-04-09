@@ -8,7 +8,7 @@ data "aws_iam_policy_document" "read-a-bucket" {
     ]
 
     resources = [
-      "arn:aws:s3:::public-bucket/*",
+      "arn:aws:s3:::tools-infra-lambda-bucket/*",
     ]
   }
 }
@@ -20,7 +20,7 @@ module "periodic_worker" {
 
   lambda_code_path = "dummy.zip"
 
-  lambda_name = "alambda"
+  lambda_name = "GetInventory"
 
   lambda_runtime = "nodejs6.10"
 
@@ -30,16 +30,19 @@ module "periodic_worker" {
 
   lambda_timeout = "300"
 
-  tags = {
-    "team"   = "someteam"
-    "domain" = "somedomain"
-  }
-
   subnet_ids = ["subnet-9eb519e8"]
 
   security_group_ids = ["sg-17261b71", "sg-1f2b1679"]
 
-  schedule_expression = "cron(*/10 * * * ? *)"
+  schedule_expression = "cron(*/2 * * * ? *)"
 
   iam_policy_document = ""
+
+  environment = "staging"
+
+  product_domain = "ti"
+
+  tags = {
+    service = "athbck"
+  }
 }

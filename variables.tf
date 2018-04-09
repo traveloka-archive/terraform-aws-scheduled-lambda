@@ -13,6 +13,12 @@ variable "lambda_name" {
   description = "Lambda function name"
 }
 
+variable "lambda_description" {
+  type        = "string"
+  description = "Description of what the lambda does"
+  default     = ""
+}
+
 variable "lambda_runtime" {
   type        = "string"
   description = "Runtime of the lambda"
@@ -65,4 +71,14 @@ variable "security_group_ids" {
 variable "schedule_expression" {
   type        = "string"
   description = "Cron expression to execute the lambda"
+}
+
+variable "environment" {
+  type        = "string"
+  description = "The environment where the lambda is running"
+}
+
+variable "product_domain" {
+  type        = "string"
+  description = "The product domain of the lambda"
 }

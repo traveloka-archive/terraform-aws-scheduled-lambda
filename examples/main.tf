@@ -45,4 +45,6 @@ module "periodic_worker" {
   tags = {
     service = "athbck"
   }
+
+  is_vpc_lambda = "false"
 }

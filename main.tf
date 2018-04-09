@@ -23,6 +23,7 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_role" {
 resource "aws_iam_role_policy_attachment" "lambda_eni_management" {
   role       = "${aws_iam_role.lambda.name}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess"
+  count      = "${var.is_vpc_lambda == "true" ? "1" : "0"}"
 }
 
 resource "aws_iam_role_policy" "lambda" {
@@ -51,7 +52,27 @@ locals {
   }
 }
 
-resource "aws_lambda_function" "lambda" {
+resource "aws_lambda_function" "lambda_classic" {
+  s3_bucket     = "${var.lambda_code_bucket}"
+  s3_key        = "${var.lambda_code_path}"
+  function_name = "${random_id.randomiser.hex}"
+  description   = "${var.lambda_description}"
+  role          = "${aws_iam_role.lambda.arn}"
+  runtime       = "${var.lambda_runtime}"
+  handler       = "${var.lambda_handler}"
+  memory_size   = "${var.lambda_memory_size}"
+  timeout       = "${var.lambda_timeout}"
+
+  tags = "${merge(local.default_tags, var.tags)}"
+
+  environment = {
+    variables = "${merge(var.environment_variables, map("ManagedBy", "Terraform"))}"
+  }
+
+  count = "${var.is_vpc_lambda == "true" ? "0" : "1"}"
+}
+
+resource "aws_lambda_function" "lambda_vpc" {
   s3_bucket     = "${var.lambda_code_bucket}"
   s3_key        = "${var.lambda_code_path}"
   function_name = "${random_id.randomiser.hex}"
@@ -72,12 +93,14 @@ resource "aws_lambda_function" "lambda" {
   environment = {
     variables = "${merge(var.environment_variables, map("ManagedBy", "Terraform"))}"
   }
+
+  count = "${var.is_vpc_lambda == "true" ? "1" : "0"}"
 }
 
 resource "aws_lambda_permission" "cloudwatch_trigger" {
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.lambda.arn}"
+  function_name = "${join("", concat(aws_lambda_function.lambda_vpc.*.arn, aws_lambda_function.lambda_classic.*.arn))}"
   principal     = "events.amazonaws.com"
   source_arn    = "${aws_cloudwatch_event_rule.lambda.arn}"
 }
@@ -91,5 +114,5 @@ resource "aws_cloudwatch_event_rule" "lambda" {
 resource "aws_cloudwatch_event_target" "lambda" {
   target_id = "${var.lambda_name}"
   rule      = "${aws_cloudwatch_event_rule.lambda.name}"
-  arn       = "${aws_lambda_function.lambda.arn}"
+  arn       = "${join("", concat(aws_lambda_function.lambda_vpc.*.arn, aws_lambda_function.lambda_classic.*.arn))}"
 }

@@ -22,6 +22,7 @@ Module Input Variables
 - `schedule_expression` - a [valid rate or cron expression](http://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html)
 - `subnet_ids` - A list of subnet ids associated with the lambda
 - `security_group_ids` - A list of security group ids associated with the lambda
+- `is_vpc_lambda` - True if the lambda resides within VPC. False otherwise.
 
 Usage 
 -----

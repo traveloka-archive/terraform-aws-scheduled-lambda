@@ -13,7 +13,7 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_role" {
 resource "aws_iam_role_policy_attachment" "lambda_eni_management" {
   role       = "${module.lambda_role.role_name}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess"
-  count      = "${var.is_vpc_lambda == "true" ? "1" : "0"}"
+  count      = "${var.is_vpc_lambda == "true" ? 1 : 0}"
 }
 
 resource "aws_iam_role_policy" "lambda_additional_policy" {
@@ -55,7 +55,7 @@ resource "aws_lambda_function" "lambda_classic" {
     variables = "${merge(var.environment_variables, map("ManagedBy", "Terraform"))}"
   }
 
-  count = "${var.is_vpc_lambda == "true" ? "0" : "1"}"
+  count = "${var.is_vpc_lambda == "true" ? 0 : 1}"
 }
 
 resource "aws_lambda_function" "lambda_vpc" {
@@ -80,7 +80,7 @@ resource "aws_lambda_function" "lambda_vpc" {
     variables = "${merge(var.environment_variables, map("ManagedBy", "Terraform"))}"
   }
 
-  count = "${var.is_vpc_lambda == "true" ? "1" : "0"}"
+  count = "${var.is_vpc_lambda == "true" ? 1 : 0}"
 }
 
 resource "aws_lambda_permission" "cloudwatch_trigger" {

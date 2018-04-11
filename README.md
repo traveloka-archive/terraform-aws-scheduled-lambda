@@ -27,7 +27,7 @@ Module Input Variables
 Usage 
 -----
 
-```js
+```hcl
 data "aws_iam_policy_document" "read-a-bucket" {
   statement {
     sid    = "AllowReadOfABucket"

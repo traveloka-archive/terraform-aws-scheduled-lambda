@@ -1,43 +1,29 @@
-data "aws_iam_policy_document" "lambda_trust_policy" {
-  statement {
-    actions = ["sts:AssumeRole"]
-    effect  = "Allow"
-
-    principals {
-      type        = "Service"
-      identifiers = ["lambda.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_iam_role" "lambda" {
-  name               = "${var.lambda_name}"
-  assume_role_policy = "${data.aws_iam_policy_document.lambda_trust_policy.json}"
+module "lambda_role" {
+  source           = "github.com/traveloka/terraform-aws-iam-role.git//modules/service?ref=v0.2.0"
+  aws_service      = "lambda.amazonaws.com"
+  role_identifier  = "${var.lambda_name}"
+  role_description = "Role for lambda ${var.lambda_name}"
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_basic_role" {
-  role       = "${aws_iam_role.lambda.name}"
+  role       = "${module.lambda_role.role_name}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_eni_management" {
-  role       = "${aws_iam_role.lambda.name}"
+  role       = "${module.lambda_role.role_name}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess"
   count      = "${var.is_vpc_lambda == "true" ? "1" : "0"}"
 }
 
-resource "aws_iam_role_policy" "lambda" {
+resource "aws_iam_role_policy" "lambda_additional_policy" {
   name   = "${var.lambda_name}"
-  role   = "${aws_iam_role.lambda.name}"
+  role   = "${module.lambda_role.role_name}"
   policy = "${var.iam_policy_document}"
   count  = "${length(var.iam_policy_document) > 0 ? 1 : 0}"
 }
 
 resource "random_id" "randomiser" {
-  keepers = {
-    s3_key = "${var.lambda_code_path}"
-  }
-
   byte_length = 8
   prefix      = "${var.product_domain}-${var.lambda_name}-"
 }
@@ -57,7 +43,7 @@ resource "aws_lambda_function" "lambda_classic" {
   s3_key        = "${var.lambda_code_path}"
   function_name = "${random_id.randomiser.hex}"
   description   = "${var.lambda_description}"
-  role          = "${aws_iam_role.lambda.arn}"
+  role          = "${module.lambda_role.role_arn}"
   runtime       = "${var.lambda_runtime}"
   handler       = "${var.lambda_handler}"
   memory_size   = "${var.lambda_memory_size}"
@@ -77,7 +63,7 @@ resource "aws_lambda_function" "lambda_vpc" {
   s3_key        = "${var.lambda_code_path}"
   function_name = "${random_id.randomiser.hex}"
   description   = "${var.lambda_description}"
-  role          = "${aws_iam_role.lambda.arn}"
+  role          = "${module.lambda_role.role_arn}"
   runtime       = "${var.lambda_runtime}"
   handler       = "${var.lambda_handler}"
   memory_size   = "${var.lambda_memory_size}"

@@ -3,5 +3,6 @@ output "lambda_arn" {
 }
 
 output "role_arn" {
-  value = "${aws_iam_role.lambda.*.arn}"
+  value       = "${module.lambda_role.role_arn}"
+  description = "The arn of the role assigned to the lambda"
 }

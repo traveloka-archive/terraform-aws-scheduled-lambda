@@ -13,8 +13,8 @@ data "aws_iam_policy_document" "read-a-bucket" {
   }
 }
 
-module "periodic_worker" {
-  source = "../"
+module "this" {
+  source = "../../"
 
   lambda_code_bucket = "tools-infra-lambda-bucket"
 
@@ -46,5 +46,7 @@ module "periodic_worker" {
     service = "athbck"
   }
 
-  is_vpc_lambda = "false"
+  is_vpc_lambda = "true"
+
+  iam_policy_document = "${data.aws_iam_policy_document.read-a-bucket.json}"
 }

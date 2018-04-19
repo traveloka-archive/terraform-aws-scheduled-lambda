@@ -1,8 +1,8 @@
 module "lambda_role" {
-  source           = "github.com/traveloka/terraform-aws-iam-role.git//modules/service?ref=v0.2.0"
-  aws_service      = "lambda.amazonaws.com"
-  role_identifier  = "${var.lambda_name}"
-  role_description = "Role for lambda ${var.lambda_name}"
+  source = "github.com/traveloka/terraform-aws-iam-role.git//modules/lambda?ref=v0.4.0"
+
+  product_domain   = "${var.product_domain}"
+  descriptive_name = "scheduled-lambda"
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_basic_role" {
@@ -23,9 +23,11 @@ resource "aws_iam_role_policy" "lambda_additional_policy" {
   count  = "${length(var.iam_policy_document) > 0 ? 1 : 0}"
 }
 
-resource "random_id" "randomiser" {
-  byte_length = 8
-  prefix      = "${var.product_domain}-${var.lambda_name}-"
+module "randomiser" {
+  source = "github.com/traveloka/terraform-aws-resource-naming.git?ref=v0.6.0"
+
+  name_prefix   = "${var.product_domain}-${var.lambda_name}"
+  resource_type = "lambda_function"
 }
 
 locals {
@@ -41,7 +43,7 @@ locals {
 resource "aws_lambda_function" "lambda_classic" {
   s3_bucket     = "${var.lambda_code_bucket}"
   s3_key        = "${var.lambda_code_path}"
-  function_name = "${random_id.randomiser.hex}"
+  function_name = "${module.randomiser.name}"
   description   = "${var.lambda_description}"
   role          = "${module.lambda_role.role_arn}"
   runtime       = "${var.lambda_runtime}"
@@ -61,7 +63,7 @@ resource "aws_lambda_function" "lambda_classic" {
 resource "aws_lambda_function" "lambda_vpc" {
   s3_bucket     = "${var.lambda_code_bucket}"
   s3_key        = "${var.lambda_code_path}"
-  function_name = "${random_id.randomiser.hex}"
+  function_name = "${module.randomiser.name}"
   description   = "${var.lambda_description}"
   role          = "${module.lambda_role.role_arn}"
   runtime       = "${var.lambda_runtime}"

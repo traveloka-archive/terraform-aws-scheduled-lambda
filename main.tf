@@ -1,8 +1,21 @@
+locals {
+  default_tags = {
+    Name          = "${var.lambda_name}"
+    Environment   = "${var.environment}"
+    ProductDomain = "${var.product_domain}"
+    Service       = "${var.service_name}"
+    Description   = "${var.lambda_description}"
+    ManagedBy     = "Terraform"
+  }
+
+  full_name = "${random_id.randomiser.hex}"
+}
+
 module "lambda_role" {
-  source           = "github.com/traveloka/terraform-aws-iam-role.git//modules/service?ref=v0.2.0"
-  aws_service      = "lambda.amazonaws.com"
-  role_identifier  = "${var.lambda_name}"
-  role_description = "Role for lambda ${var.lambda_name}"
+  source           = "github.com/traveloka/terraform-aws-iam-role.git//modules/lambda?ref=v0.4.0"
+  product_domain   = "${var.product_domain}"
+  service_name     = "${var.service_name}"
+  descriptive_name = "${var.lambda_name}"
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_basic_role" {
@@ -25,23 +38,13 @@ resource "aws_iam_role_policy" "lambda_additional_policy" {
 
 resource "random_id" "randomiser" {
   byte_length = 8
-  prefix      = "${var.product_domain}-${var.lambda_name}-"
-}
-
-locals {
-  default_tags = {
-    Name          = "${var.lambda_name}"
-    Environment   = "${var.environment}"
-    ProductDomain = "${var.product_domain}"
-    Description   = "${var.lambda_description}"
-    ManagedBy     = "Terraform"
-  }
+  prefix      = "${var.service_name == "" ? var.product_domain : var.service_name}-${var.lambda_name}-"
 }
 
 resource "aws_lambda_function" "lambda_classic" {
   s3_bucket     = "${var.lambda_code_bucket}"
   s3_key        = "${var.lambda_code_path}"
-  function_name = "${random_id.randomiser.hex}"
+  function_name = "${local.full_name}"
   description   = "${var.lambda_description}"
   role          = "${module.lambda_role.role_arn}"
   runtime       = "${var.lambda_runtime}"

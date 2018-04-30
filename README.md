@@ -24,8 +24,8 @@ Module Input Variables
 - `security_group_ids` - A list of security group ids associated with the lambda
 - `schedule_expression` - a [valid rate or cron expression](http://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html)
 - `environment` - Environment where the lambda runs e.g. staging, production
-- `product_domain` - The product domain of the lambda owner
-- `service_name` - The service n
+- `product_domain` - The product domain owner of the lambda
+- `service_name` - The service name of the lambda if any
 - `is_vpc_lambda` - True if the lambda resides within VPC. False otherwise.
 
 Usage 

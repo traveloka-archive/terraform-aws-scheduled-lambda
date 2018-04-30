@@ -83,6 +83,12 @@ variable "product_domain" {
   description = "The product domain of the lambda"
 }
 
+variable "service_name" {
+  type        = "string"
+  description = "The service name of the lambda"
+  default     = ""
+}
+
 variable "is_vpc_lambda" {
   type        = "string"
   description = "True of false to indicate whether this lambda is executed within VPC or not"

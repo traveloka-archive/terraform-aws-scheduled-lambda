@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "ap-southeast-1"
+}
+
 data "aws_iam_policy_document" "read-a-bucket" {
   statement {
     sid    = "AllowReadOfABucket"
@@ -41,10 +45,6 @@ module "this" {
   environment = "staging"
 
   product_domain = "ti"
-
-  tags = {
-    service = "athbck"
-  }
 
   is_vpc_lambda = "false"
 

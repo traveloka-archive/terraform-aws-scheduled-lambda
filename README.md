@@ -13,7 +13,6 @@ Module Input Variables
 - `lambda_code_path` - Name of the S3 deployment object
 - `lambda_name` - Unique name for Lambda function
 - `lambda_description` - Description of what the lambda does
-- `
 - `lambda_runtime` - A [valid](http://docs.aws.amazon.com/cli/latest/reference/lambda/create-function.html#options) Lambda runtime environment
 - `lambda_handler` - The entrypoint into your Lambda function
 - `lambda_memory_size` - The memory size allocated to your lambda function

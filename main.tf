@@ -23,9 +23,11 @@ resource "aws_iam_role_policy" "lambda_additional_policy" {
   count  = "${length(var.iam_policy_document) > 0 ? 1 : 0}"
 }
 
-resource "random_id" "randomiser" {
-  byte_length = 8
-  prefix      = "${var.product_domain}-${var.lambda_name}-"
+module "random_id" {
+  source = "github.com/traveloka/terraform-aws-resource-naming?ref=v0.6.0"
+
+  name_prefix   = "${var.product_domain}-${var.lambda_name}-"
+  resource_type = "lambda_function"
 }
 
 locals {
@@ -41,7 +43,7 @@ locals {
 resource "aws_lambda_function" "lambda_classic" {
   s3_bucket     = "${var.lambda_code_bucket}"
   s3_key        = "${var.lambda_code_path}"
-  function_name = "${random_id.randomiser.hex}"
+  function_name = "${module.random_id.name}"
   description   = "${var.lambda_description}"
   role          = "${module.lambda_role.role_arn}"
   runtime       = "${var.lambda_runtime}"
@@ -61,7 +63,7 @@ resource "aws_lambda_function" "lambda_classic" {
 resource "aws_lambda_function" "lambda_vpc" {
   s3_bucket     = "${var.lambda_code_bucket}"
   s3_key        = "${var.lambda_code_path}"
-  function_name = "${random_id.randomiser.hex}"
+  function_name = "${module.random_id.name}"
   description   = "${var.lambda_description}"
   role          = "${module.lambda_role.role_arn}"
   runtime       = "${var.lambda_runtime}"

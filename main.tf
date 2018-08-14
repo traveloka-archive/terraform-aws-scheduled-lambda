@@ -1,5 +1,5 @@
 module "lambda_role" {
-  source = "github.com/traveloka/terraform-aws-iam-role//modules/lambda?ref=v0.4.2"
+  source = "github.com/traveloka/terraform-aws-iam-role//modules/lambda?ref=v0.4.4"
 
   product_domain   = "${var.product_domain}"
   descriptive_name = "${var.lambda_name}"

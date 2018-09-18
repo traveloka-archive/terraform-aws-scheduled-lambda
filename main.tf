@@ -94,7 +94,7 @@ resource "aws_lambda_permission" "cloudwatch_trigger" {
 }
 
 resource "aws_cloudwatch_event_rule" "lambda" {
-  name                = "${var.lambda_name}"
+  name                = "${module.random_id.name}"
   description         = "Schedule trigger for lambda execution"
   schedule_expression = "${var.schedule_expression}"
 }

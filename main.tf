@@ -24,9 +24,16 @@ resource "aws_iam_role_policy" "lambda_additional_policy" {
 }
 
 module "random_id" {
-  source = "github.com/traveloka/terraform-aws-resource-naming?ref=v0.6.0"
+  source = "github.com/traveloka/terraform-aws-resource-naming?ref=v0.7.1"
 
-  name_prefix   = "${var.product_domain}-${var.lambda_name}-"
+  name_prefix   = "${var.product_domain}-${var.lambda_name}"
+  resource_type = "lambda_function"
+}
+
+module "cwrule_name" {
+  source = "github.com/traveloka/terraform-aws-resource-naming?ref=v0.7.1"
+
+  name_prefix   = "${var.product_domain}-${var.lambda_name}"
   resource_type = "lambda_function"
 }
 
@@ -94,7 +101,7 @@ resource "aws_lambda_permission" "cloudwatch_trigger" {
 }
 
 resource "aws_cloudwatch_event_rule" "lambda" {
-  name                = "${module.random_id.name}"
+  name                = "${module.cwrule_name.name}"
   description         = "Schedule trigger for lambda execution"
   schedule_expression = "${var.schedule_expression}"
 }

@@ -34,7 +34,7 @@ module "cwrule_name" {
   source = "github.com/traveloka/terraform-aws-resource-naming?ref=v0.7.1"
 
   name_prefix   = "${var.product_domain}-${var.lambda_name}"
-  resource_type = "lambda_function"
+  resource_type = "cloudwatch_event_rule"
 }
 
 locals {

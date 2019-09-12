@@ -1,3 +1,6 @@
+# [DEPRECATED] We are not maintaining this module anymore
+# Please use https://github.com/traveloka/terraform-aws-lambda
+
 # Scheduled AWS Lambda function
 =============================
 
